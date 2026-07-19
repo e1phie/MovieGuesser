@@ -9,7 +9,7 @@ const LABELS: Record<FieldKey, string> = {
   cast: '主演',
   genre: '类型',
 };
-const MULTI: Set<FieldKey> = new Set(['director', 'cast', 'genre']);
+const MULTI: Set<FieldKey> = new Set(['country', 'director', 'cast', 'genre']);
 
 function Cell({
   cell,

@@ -14,6 +14,7 @@ export interface Filter {
   yearTo?: number; // 含，空/0 = 不限
   genres: string[]; // 任一命中（并集），空 = 不限
   continents: string[]; // 任一命中，空 = 不限
+  maxRank?: number; // IMDb rank 上限（简单模式），空 = 不限
 }
 
 export function searchMovies(query: string): MovieSuggestion[] {
@@ -33,6 +34,9 @@ export function pickAnswer(): Movie {
   return MOVIES[i];
 }
 
+// 简单模式：IMDb rank 上限（片单更知名）
+export const EASY_MAX_RANK = 700;
+
 // 从全库提取类型清单（去重）
 export function listGenres(): string[] {
   const s = new Set<string>();
@@ -49,6 +53,8 @@ export function listContinents(): string[] {
 }
 
 export function matches(m: Movie, f: Filter): boolean {
+  // 简单模式 rank 上限
+  if (f.maxRank && m.id > f.maxRank) return false;
   // 年份
   if (f.yearFrom && m.year < f.yearFrom) return false;
   if (f.yearTo && m.year > f.yearTo) return false;

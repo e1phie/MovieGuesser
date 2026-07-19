@@ -29,6 +29,7 @@ function loadFilter(): Filter {
       yearTo: f.yearTo,
       genres: Array.isArray(f.genres) ? f.genres : [],
       continents: Array.isArray(f.continents) ? f.continents : [],
+      maxRank: f.maxRank,
     };
   } catch {
     return EMPTY_FILTER;

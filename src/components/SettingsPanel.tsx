@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { listContinents, listGenres, type Filter } from '../data/library';
+import { EASY_MAX_RANK, listContinents, listGenres, type Filter } from '../data/library';
 
 type Theme = 'dark' | 'light';
 
@@ -31,6 +31,7 @@ export default function SettingsPanel({
   const [continents, setContinents] = useState<Set<string>>(
     new Set(filter.continents)
   );
+  const [easyMode, setEasyMode] = useState<boolean>(!!filter.maxRank);
 
   const allGenres = useMemo(() => listGenres(), []);
   const allContinents = useMemo(() => listContinents(), []);
@@ -48,6 +49,7 @@ export default function SettingsPanel({
       yearTo: yearTo ? Number(yearTo) || undefined : undefined,
       genres: Array.from(genres),
       continents: Array.from(continents),
+      maxRank: easyMode ? EASY_MAX_RANK : undefined,
     };
   }
 
@@ -60,6 +62,7 @@ export default function SettingsPanel({
     setYearTo('');
     setGenres(new Set());
     setContinents(new Set());
+    setEasyMode(false);
     onReset();
   }
 
@@ -74,6 +77,24 @@ export default function SettingsPanel({
         </div>
 
         <div className="modal-body">
+          {/* 难度预设 */}
+          <div className="settings-group">
+            <span className="settings-label">难度模式</span>
+            <div className="theme-switch">
+              <button
+                className={!easyMode ? 'active' : ''}
+                onClick={() => setEasyMode(false)}
+              >
+                普通（全部 992 部）
+              </button>
+              <button
+                className={easyMode ? 'active' : ''}
+                onClick={() => setEasyMode(true)}
+              >
+                简单（前 {EASY_MAX_RANK} 知名）
+              </button>
+            </div>
+          </div>
           {/* 主题 */}
           <div className="settings-group">
             <span className="settings-label">主题</span>

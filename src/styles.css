@@ -209,6 +209,11 @@ body {
   color: #fff;
 }
 
+.chip-close {
+  background: var(--yellow);
+  color: #1a1a1a;
+}
+
 .chip-absent {
   background: var(--chip-absent-bg);
   color: var(--chip-absent-text);

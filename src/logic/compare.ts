@@ -1,5 +1,5 @@
-import type { FieldCell, FieldItem, FieldKey, GuessResult, Movie } from '../types';
-import { anySameContinent } from './continents';
+import type { FieldCell, FieldItem, FieldKey, GuessResult, Movie, Status } from '../types';
+import { continentOf } from './continents';
 
 const YEAR_TOLERANCE = 5;
 const RATING_TOLERANCE = 0.5;
@@ -24,12 +24,6 @@ const COUNTRY_ZH: Record<string, string> = {
 
 function countryLabel(iso2: string): string {
   return COUNTRY_ZH[iso2.toUpperCase()] ?? iso2.toUpperCase();
-}
-
-function setEqual(a: string[], b: string[]): boolean {
-  if (a.length !== b.length) return false;
-  const sa = new Set(a.map((s) => s.toLowerCase()));
-  return b.every((s) => sa.has(s.toLowerCase()));
 }
 
 function intersect(a: string[], b: string[]): string[] {
@@ -68,10 +62,30 @@ function compareRating(guess: number, answer: number): FieldCell {
 }
 
 function compareCountries(guess: string[], answer: string[]): FieldCell {
-  const display = join(guess.map(countryLabel));
-  if (setEqual(guess, answer)) return { status: 'correct', display };
-  if (anySameContinent(guess, answer)) return { status: 'close', display };
-  return { status: 'absent', display };
+  const answerSet = new Set(answer.map((s) => s.toLowerCase()));
+  const items: FieldItem[] = guess.map((iso2) => {
+    const inAnswer = answerSet.has(iso2.toLowerCase());
+    let status: Status;
+    if (inAnswer) {
+      status = 'correct';
+    } else {
+      // 与答案任一国同大洲 → 黄
+      const sameCont = answer.some(
+        (a) => continentOf(a) === continentOf(iso2)
+      );
+      status = sameCont ? 'close' : 'absent';
+    }
+    return { value: countryLabel(iso2), status };
+  });
+  const allCorrect = items.length > 0 && items.every((it) => it.status === 'correct');
+  const anyHit = items.some(
+    (it) => it.status === 'correct' || it.status === 'close'
+  );
+  return {
+    status: allCorrect ? 'correct' : anyHit ? 'close' : 'absent',
+    display: join(guess.map(countryLabel)),
+    items,
+  };
 }
 
 // 多值字段逐项着色：命中 correct(绿)，未命中 absent(灰)。
