@@ -156,10 +156,15 @@ body {
   word-break: break-word;
 }
 
-/* 电影名列：无状态色 */
+/* 电影名列：无状态色，居中加粗 */
 .cell-title {
   background: var(--panel);
-  text-align: left;
+  text-align: center;
+}
+
+.cell-title .cell-value {
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .cell-placeholder {
