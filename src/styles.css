@@ -265,7 +265,49 @@ body {
   color: var(--muted);
 }
 
-/* 简介提示 */
+/* 翻转动画：仅最新行格 */
+@keyframes flip-in {
+  0% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  60% {
+    transform: rotateX(-12deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(0);
+  }
+}
+
+.cell-flip {
+  animation: flip-in 0.4s ease-out both;
+  transform-origin: center top;
+}
+
+/* toast */
+.toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 60;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* 搜索匹配高亮 */
+.match {
+  background: var(--yellow);
+  color: #1a1a1a;
+  border-radius: 2px;
+  padding: 0 1px;
+}
 .hint-line {
   margin: 10px 0 0;
   padding: 10px 14px;
@@ -302,8 +344,9 @@ body {
   font-size: 14px;
 }
 
-.suggestions li:hover {
-  background: var(--panel);
+.suggestions li:hover,
+.suggestions li.active {
+  background: var(--hover-bg);
 }
 
 .suggestions li.empty {
@@ -567,4 +610,42 @@ body {
   margin: 10px 0 0;
   color: var(--muted);
   font-size: 12px;
+}
+
+/* 移动端适配 */
+@media (max-width: 600px) {
+  .app {
+    padding: 10px;
+  }
+  .header h1 {
+    font-size: 22px;
+  }
+  .header-actions {
+    gap: 6px;
+  }
+  .reveal-btn,
+  .settings-btn {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+  .game-table {
+    border-spacing: 2px;
+  }
+  .game-table th {
+    font-size: 9px;
+    padding: 3px 1px;
+  }
+  .cell {
+    padding: 4px 2px;
+  }
+  .cell-value {
+    font-size: 10px;
+  }
+  .chip {
+    font-size: 9px;
+    padding: 1px 3px;
+  }
+  .answer-fields {
+    grid-template-columns: 1fr;
+  }
 }

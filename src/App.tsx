@@ -67,16 +67,28 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [theme, setTheme] = useState<Theme>(() => {
     const t = localStorage.getItem(THEME_KEY);
-    return t === 'light' ? 'light' : 'light'; // 默认白天
+    if (t === 'light' || t === 'dark') return t; // 记忆优先
+    // 无记忆：跟随系统，系统深色→夜晚，否则白天
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
   });
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   // 主题应用到 root + 持久化
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
+
+  // toast 自动消失
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   const startGame = useCallback((f: Filter) => {
     setAnswer(loadAnswer(f));
@@ -93,6 +105,11 @@ export default function App() {
   const handlePick = useCallback(
     (s: { id: number }) => {
       if (!answer || phase !== 'playing' || busy) return;
+      // 去重：已猜过的片不给猜
+      if (guesses.some((g) => g.movie.id === s.id)) {
+        setToast('这部电影已经猜过了');
+        return;
+      }
       setBusy(true);
       try {
         const guessMovie = fetchDetails(s.id);
@@ -150,6 +167,7 @@ export default function App() {
 
   return (
     <div className="app">
+      {toast && <div className="toast">{toast}</div>}
       <header className="header">
         <div className="header-row">
           <div>

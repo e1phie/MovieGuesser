@@ -11,11 +11,23 @@ const LABELS: Record<FieldKey, string> = {
 };
 const MULTI: Set<FieldKey> = new Set(['director', 'cast', 'genre']);
 
-function Cell({ cell, field }: { cell: FieldCell; field: FieldKey }) {
+function Cell({
+  cell,
+  field,
+  flip,
+  delay,
+}: {
+  cell: FieldCell;
+  field: FieldKey;
+  flip?: boolean;
+  delay?: number;
+}) {
+  const cls = `cell cell-${cell.status}${flip ? ' cell-flip' : ''}`;
+  const style = flip ? { animationDelay: `${delay ?? 0}ms` } : undefined;
   // 多值：逐项 chip 着色
   if (MULTI.has(field)) {
     return (
-      <td className={`cell cell-${cell.status}`}>
+      <td className={cls} style={style}>
         <div className="cell-items">
           {cell.items?.map((it, i) => (
             <span key={i} className={`chip chip-${it.status}`}>
@@ -28,7 +40,7 @@ function Cell({ cell, field }: { cell: FieldCell; field: FieldKey }) {
   }
   // 单值
   return (
-    <td className={`cell cell-${cell.status}`}>
+    <td className={cls} style={style}>
       <span className="cell-value">
         {cell.display}
         {cell.arrow === 'up' && <span className="arrow"> ↑</span>}
@@ -57,16 +69,30 @@ export default function GameTable({
         </tr>
       </thead>
       <tbody>
-        {guesses.map((g, i) => (
-          <tr key={i}>
-            <td className="cell-title">
-              <span className="cell-value">{g.movie.title}</span>
-            </td>
-            {FIELDS.map((f) => (
-              <Cell key={f} cell={g.cells[f]} field={f} />
-            ))}
-          </tr>
-        ))}
+        {guesses.map((g, i) => {
+          // 仅最新一行播翻转动画
+          const flip = i === guesses.length - 1;
+          const delay = (j: number) => j * 90;
+          return (
+            <tr key={i}>
+              <td
+                className={`cell-title${flip ? ' cell-flip' : ''}`}
+                style={flip ? { animationDelay: `${delay(0)}ms` } : undefined}
+              >
+                <span className="cell-value">{g.movie.title}</span>
+              </td>
+              {FIELDS.map((f, j) => (
+                <Cell
+                  key={f}
+                  cell={g.cells[f]}
+                  field={f}
+                  flip={flip}
+                  delay={delay(j + 1)}
+                />
+              ))}
+            </tr>
+          );
+        })}
         {Array.from({ length: empties }).map((_, i) => (
           <tr key={`empty-${i}`} className="row-empty">
             <td className="cell-title" />
