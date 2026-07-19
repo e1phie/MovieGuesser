@@ -204,7 +204,7 @@ export default function App() {
       )}
       {phase === 'playing' && guesses.length >= 3 && (
         <div className="hint-line">
-          <p>💡 主演：{answer.cast.slice(0, 3).join('、')}</p>
+          <p>💡 主演：{answer.cast[0] ?? '—'}</p>
           {guesses.length >= 5 && (
             <p>📝 简介：{hintFromOverview(answer?.overview ?? '')}</p>
           )}
