@@ -26,6 +26,7 @@ export default function GuessInput({ disabled, onPick }: Props) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0); // 方向键选中索引
   const boxRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const suggestions = useMemo(() => searchMovies(query), [query]);
 
@@ -33,6 +34,11 @@ export default function GuessInput({ disabled, onPick }: Props) {
   useEffect(() => {
     setActive(0);
   }, [query]);
+
+  // 挂载即聚焦
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   // 点外部关下拉
   useEffect(() => {
@@ -78,6 +84,7 @@ export default function GuessInput({ disabled, onPick }: Props) {
   return (
     <div className="input-wrap" ref={boxRef}>
       <input
+        ref={inputRef}
         className="guess-input"
         type="text"
         placeholder="输入电影名搜索，回车选首条…"

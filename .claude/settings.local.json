@@ -15,7 +15,8 @@
       "Bash(ping -c 2 -t 5 api.themoviedb.org)",
       "Bash(curl -sS -m 8 -o /dev/null -w \"HTTP %{http_code} time=%{time_total}s\\\\n\" --resolve api.themoviedb.org:443:13.33.67.64 \"https://api.themoviedb.org/3/movie/popular?api_key=bdead10808964fb9c6ac3b8c7a494cba&page=1\")",
       "Bash(sudo tee -a /etc/hosts)",
-      "Bash(curl -sS -m 10 -o /dev/null -w \"HTTP %{http_code} time=%{time_total}s\\\\n\" \"https://api.themoviedb.org/3/movie/popular?api_key=bdead10808964fb9c6ac3b8c7a494cba&language=zh-CN&page=1\")"
+      "Bash(curl -sS -m 10 -o /dev/null -w \"HTTP %{http_code} time=%{time_total}s\\\\n\" \"https://api.themoviedb.org/3/movie/popular?api_key=bdead10808964fb9c6ac3b8c7a494cba&language=zh-CN&page=1\")",
+      "Bash(node --input-type=module -e ' *)"
     ]
   }
 }
