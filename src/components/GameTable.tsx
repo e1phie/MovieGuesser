@@ -1,0 +1,81 @@
+import type { FieldCell, FieldKey, GuessResult } from '../types';
+
+const FIELDS: FieldKey[] = ['year', 'rating', 'country', 'director', 'cast', 'genre'];
+const LABELS: Record<FieldKey, string> = {
+  year: '年份',
+  rating: '评分',
+  country: '国家',
+  director: '导演',
+  cast: '主演',
+  genre: '类型',
+};
+const MULTI: Set<FieldKey> = new Set(['director', 'cast', 'genre']);
+
+function Cell({ cell, field }: { cell: FieldCell; field: FieldKey }) {
+  // 多值：逐项 chip 着色
+  if (MULTI.has(field)) {
+    return (
+      <td className={`cell cell-${cell.status}`}>
+        <div className="cell-items">
+          {cell.items?.map((it, i) => (
+            <span key={i} className={`chip chip-${it.status}`}>
+              {it.value}
+            </span>
+          )) ?? cell.display}
+        </div>
+      </td>
+    );
+  }
+  // 单值
+  return (
+    <td className={`cell cell-${cell.status}`}>
+      <span className="cell-value">
+        {cell.display}
+        {cell.arrow === 'up' && <span className="arrow"> ↑</span>}
+        {cell.arrow === 'down' && <span className="arrow"> ↓</span>}
+      </span>
+    </td>
+  );
+}
+
+export default function GameTable({
+  guesses,
+  maxAttempts,
+}: {
+  guesses: GuessResult[];
+  maxAttempts: number;
+}) {
+  const empties = Math.max(0, maxAttempts - guesses.length);
+  return (
+    <table className="game-table">
+      <thead>
+        <tr>
+          <th className="th-title">电影</th>
+          {FIELDS.map((f) => (
+            <th key={f}>{LABELS[f]}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {guesses.map((g, i) => (
+          <tr key={i}>
+            <td className="cell-title">
+              <span className="cell-value">{g.movie.title}</span>
+            </td>
+            {FIELDS.map((f) => (
+              <Cell key={f} cell={g.cells[f]} field={f} />
+            ))}
+          </tr>
+        ))}
+        {Array.from({ length: empties }).map((_, i) => (
+          <tr key={`empty-${i}`} className="row-empty">
+            <td className="cell-title" />
+            {FIELDS.map((f) => (
+              <td key={f} className="cell cell-placeholder" />
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
