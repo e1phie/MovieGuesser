@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   EMPTY_FILTER,
   fetchDetails,
-  matches,
   pickAnswerFiltered,
   type Filter,
 } from './data/library';
@@ -14,16 +13,11 @@ import ResultBanner from './components/ResultBanner';
 import SettingsPanel from './components/SettingsPanel';
 
 const MAX_ATTEMPTS = 8;
-const ANSWER_KEY = 'mg_answer';
 const FILTER_KEY = 'mg_filter';
 const THEME_KEY = 'mg_theme';
 
 type Phase = 'playing' | 'won' | 'lost';
 type Theme = 'dark' | 'light';
-
-interface StoredAnswer {
-  movie: Movie;
-}
 
 function loadFilter(): Filter {
   try {
@@ -42,21 +36,8 @@ function loadFilter(): Filter {
 }
 
 function loadAnswer(filter: Filter): Movie {
-  // 复用 sessionStorage 答案，但需符合当前 filter 且字段完整，否则重选
-  const cached = sessionStorage.getItem(ANSWER_KEY);
-  if (cached) {
-    try {
-      const movie = (JSON.parse(cached) as StoredAnswer).movie;
-      if (movie?.id && matches(movie, filter) && typeof movie.overview === 'string') {
-        return movie;
-      }
-    } catch {
-      // fallthrough
-    }
-  }
-  const movie = pickAnswerFiltered(filter);
-  sessionStorage.setItem(ANSWER_KEY, JSON.stringify({ movie } satisfies StoredAnswer));
-  return movie;
+  // 每次刷新/新开局都重选新答案
+  return pickAnswerFiltered(filter);
 }
 
 export default function App() {
@@ -133,7 +114,6 @@ export default function App() {
     (f: Filter) => {
       setFilter(f);
       localStorage.setItem(FILTER_KEY, JSON.stringify(f));
-      sessionStorage.removeItem(ANSWER_KEY); // 强制按新 filter 重选
       startGame(f);
     },
     [startGame]
@@ -142,12 +122,10 @@ export default function App() {
   const handleResetFilter = useCallback(() => {
     setFilter(EMPTY_FILTER);
     localStorage.removeItem(FILTER_KEY);
-    sessionStorage.removeItem(ANSWER_KEY);
     startGame(EMPTY_FILTER);
   }, [startGame]);
 
   const handleRestart = useCallback(() => {
-    sessionStorage.removeItem(ANSWER_KEY);
     startGame(filter);
   }, [filter, startGame]);
 
