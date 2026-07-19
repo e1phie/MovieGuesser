@@ -6,8 +6,6 @@
 
 内置 992 部 IMDb Top 电影静态库（[src/data/movies_tmdb.json](src/data/movies_tmdb.json)），TMDb 中文补全 + IMDb 评分。纯前端、无外网依赖、无需 API key 即可游玩。
 
-数据由 [scripts/fetch_movies.py](scripts/fetch_movies.py) 从 CSV 的 IMDb ID 经 TMDb `/find` + `/movie/{id}` (zh-CN) 拉取生成。重跑需 TMDb key（见脚本）。
-
 ## 运行
 
 ```bash
